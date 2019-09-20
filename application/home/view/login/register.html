@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+	<title>个人注册</title>
+
+    <link rel="stylesheet" type="text/css" href="/static/home/css/all.css" />
+    <link rel="stylesheet" type="text/css" href="/static/home/css/pages-register.css" />
+    
+	<script type="text/javascript" src="/static/home/js/all.js"></script>
+	<script type="text/javascript" src="/static/home/js/pages/register.js"></script>
+</head>
+
+<body>
+	<div class="register py-container ">
+		<!--head-->
+		<div class="logoArea">
+			<a href="" class="logo"></a>
+		</div>
+		<!--register-->
+		<div class="registerArea">
+			<h3>注册新用户<span class="go">我有账号，去<a href="login.html" target="_blank">登陆</a></span></h3>
+			<div class="info">
+				<form action="{:url('home/login/phone')}" method="post" id="reg_form" class="sui-form form-horizontal">
+					<div class="control-group">
+						<label class="control-label">手机号：</label>
+						<div class="controls">
+							<input type="text" id="phone" name="phone" placeholder="请输入你的手机号" class="input-xfat input-xlarge">
+							<span class="error"></span>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="inputPassword" class="control-label">验证码：</label>
+						<div class="controls">
+							<input type="text" id="code" name="code" placeholder="验证码" class="input-xfat input-xlarge" style="width:120px">
+							<button type="button" class="btn-xlarge" id="dyMobileButton">发送验证码</button>
+							<span class="error"></span>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="inputPassword" class="control-label">登录密码：</label>
+						<div class="controls">
+							<input type="password" id="password" name="password" placeholder="设置登录密码" class="input-xfat input-xlarge">
+							<span class="error"></span>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="inputPassword" class="control-label">确认密码：</label>
+						<div class="controls">
+							<input type="password" id="repassword" name="repassword" placeholder="再次确认密码" class="input-xfat input-xlarge">
+							<span class="error"></span>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="inputPassword" class="control-label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						<div class="controls">
+							<input name="m1" type="checkbox" value="2" checked=""><span>同意协议并注册《品优购用户协议》</span>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label"></label>
+						<div class="controls btn-reg">
+							<a id="reg_btn" class="sui-btn btn-block btn-xlarge btn-danger reg-btn" href="javascript:;">完成注册</a>
+						</div>
+					</div>
+				</form>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+		<!--foot-->
+		<div class="py-container copyright">
+			<ul>
+				<li>关于我们</li>
+				<li>联系我们</li>
+				<li>联系客服</li>
+				<li>商家入驻</li>
+				<li>营销中心</li>
+				<li>手机品优购</li>
+				<li>销售联盟</li>
+				<li>品优购社区</li>
+			</ul>
+			<div class="address">地址：北京市昌平区建材城西路金燕龙办公楼一层 邮编：100096 电话：400-618-4000 传真：010-82935100</div>
+			<div class="beian">京ICP备08001421号京公网安备110108007702
+			</div>
+		</div>
+		<script type="text/javascript">
+            //给“发送验证码”绑定点击事件
+            $('#dyMobileButton').click(function(){
+                //手机号检测
+                if(!/^1[3-9]\d{9}$/.test( $('#phone').val() ) ){
+                    $('#phone').parent().find('.error').html('手机号格式不正确');
+                    return;
+                }else{
+                    $('#phone').parent().find('.error').html('');
+                }
+                //发送ajax请求
+                var data = {"phone":$('#phone').val()};
+                $.ajax({
+                    "url":"{:url('home/login/sendcode')}",
+                    "type":"post",
+                    "data":data,
+                    "dataType":"json",
+                    "success":function(res){
+                        console.log(res);
+//					if(res.code != 10000){
+                        alert(res.msg);return;
+//					}
+                    }
+                });
+
+                //设置定时器
+                var num = 6;
+                var timer = setInterval(function(){
+                    num--;
+                    //修改button的内容
+                    $('#dyMobileButton').html('重新发送:' + num + 's');
+                    // $('#dyMobileButton').html('重新发送:' + num + 's').attr('disabled', true);
+                    //禁用点击效果 attr 和 prop 这里都可以用
+                    $('#dyMobileButton').prop('disabled', true);
+                    if(num == 0){
+                        // 倒计时结束
+                        //还原button的内容
+                        $('#dyMobileButton').html('发送验证码');
+                        //还原点击效果
+                        $('#dyMobileButton').prop('disabled', false);
+                        //清除定时器
+                        clearInterval(timer);
+                    }
+                }, 1000);
+
+            });
+
+            //给“完成注册”按钮绑定点击事件
+            $('#reg_btn').click(function(){
+                //是否有错误的 开关
+                var flag = true;
+                //检测手机号
+                if($('#phone').val() == ''){
+                    //报错 手机号不能为空
+                    // $('#phone').next().html('手机号不能为空');
+                    $('#phone').parent().find('.error').html('手机号不能为空');
+                    flag = false;
+                }else if(!/^1[3-9]\d{9}$/.test( $('#phone').val() )){
+                    //报错 手机号格式不正确
+                    $('#phone').parent().find('.error').html('手机号格式不正确');
+                    flag = false;
+                }else{
+                    $('#phone').parent().find('.error').html('');
+                }
+
+                //验证码
+                if($('#code').val() == ''){
+                    //报错 验证码不能为空
+                    $('#code').parent().find('.error').html('验证码不能为空');
+                    flag = false;
+                }else{
+                    $('#code').parent().find('.error').html('');
+                }
+
+                //密码
+                if($('#password').val() == ''){
+                    //报错 密码不能为空
+                    $('#password').parent().find('.error').html('密码不能为空');
+                    flag = false;
+                }else{
+                    $('#password').parent().find('.error').html('');
+                }
+
+                //确认密码
+                if($('#repassword').val() == ''){
+                    //报错 确认密码不能为空
+                    $('#repassword').parent().find('.error').html('确认密码不能为空');
+                    flag = false;
+                }else{
+                    $('#repassword').parent().find('.error').html('');
+                }
+
+                //提交表单
+                if(flag){
+                    $('#reg_form').submit();
+                }
+            });
+		</script>
+	</div>
+</body>
+
+</html>
